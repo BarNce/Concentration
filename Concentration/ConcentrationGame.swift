@@ -9,9 +9,29 @@ import Foundation
 
 class ConcentrationGame {
     
-    var cards = [Card]()
+    private(set) var cards = [Card]()
     
-    var indexOfOneAndOnlyFaceUpCard: Int?
+    private var indexOfOneAndOnlyFaceUpCard: Int? {
+        get {
+            var foundIndex: Int?
+            for index in cards.indices {
+                if cards[index].isFaceUp {
+                    if foundIndex == nil {
+                        foundIndex = index
+                    } else {
+                        return nil
+                    }
+                }
+            }
+            return foundIndex
+        }
+        set {
+            for index in cards.indices {
+                cards[index].isFaceUp = (index == newValue)
+            }
+        }
+        
+    }
     
     
     func chooseCard(at index: Int) {
@@ -22,12 +42,7 @@ class ConcentrationGame {
                     cards[index].isMatched = true
                 }
                 cards[index].isFaceUp = true
-                indexOfOneAndOnlyFaceUpCard = nil
             } else {
-                for flipDown in cards.indices {
-                    cards[flipDown].isFaceUp = false
-                }
-                cards[index].isFaceUp = true
                 indexOfOneAndOnlyFaceUpCard = index
             }
         }
@@ -35,13 +50,13 @@ class ConcentrationGame {
     }
     
     init(numberOfPairsOfCards: Int) {
+        assert(numberOfPairsOfCards > 0, "ContrationGame.init(\(numberOfPairsOfCards): должен иметь одну пару карт или более)")
         for _ in 0..<numberOfPairsOfCards {
             let card = Card()
             cards += [card, card]
         }
         
         for _ in cards {
-//            cards.swapAt(Int(arc4random_uniform(UInt32(cards.count))), Int(arc4random_uniform(UInt32(cards.count))))
             let swapIndex1 = Int(arc4random_uniform(UInt32(cards.count)))
             let swapIndex2 = Int(arc4random_uniform(UInt32(cards.count)))
             cards.swapAt(swapIndex1, swapIndex2)
