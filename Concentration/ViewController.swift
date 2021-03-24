@@ -15,25 +15,40 @@ class ViewController: UIViewController {
         return (buttonCollection.count + 1) / 2
     }
     
+    private func updateTouches() {
+        let attributes: [NSAttributedString.Key: Any] = [
+            .strokeWidth: 5.0,
+            .strokeColor: UIColor.red
+        ]
+        
+        let attributedString = NSAttributedString(string: "Нажатия: \(touches)", attributes: attributes)
+        
+        touchLabel.attributedText = attributedString
+    }
+    
     private(set) var touches = 0 {
         didSet {
-            touchLabel.text = "Нажатия: \(touches)"
+            updateTouches()
         }
     }
     
     
     
-    private var emojiCollection = ["🦊", "👼🏿", "🦧", "🦫", "🦞", "🪰", "🦨", "🕊", "🦈", "🐍", "🦁", "🐉"]
+//    private var emojiCollection = ["🦊", "👼🏿", "🦧", "🦫", "🦞", "🪰", "🦨", "🕊", "🦈", "🐍", "🦁", "🐉"]
     
-    private var emojiDictionary = [Int: String]()
+    private var emojiCollection = "🦊👼🏿🦧🦫🦞🪰🦨🕊🦈🐍🦁🐉"
+    
+    
+    private var emojiDictionary = [Card: String]()
     
     
     private func emojiIdentifier(for card: Card) -> String {
-        if emojiDictionary[card.identifier] == nil {
+        if emojiDictionary[card] == nil {
+            let randomStringIndex = emojiCollection.index(emojiCollection.startIndex, offsetBy: emojiCollection.count.arc4randomExtension)
             
-            emojiDictionary[card.identifier] = emojiCollection.remove(at: emojiCollection.count.arc4randomExtension)
+            emojiDictionary[card] = String(emojiCollection.remove(at: randomStringIndex))
         }
-        return emojiDictionary[card.identifier] ?? "?"
+        return emojiDictionary[card] ?? "?"
     }
     
     
@@ -56,7 +71,11 @@ class ViewController: UIViewController {
     
     @IBOutlet private var buttonCollection: [UIButton]!
     
-    @IBOutlet private weak var touchLabel: UILabel!
+    @IBOutlet private weak var touchLabel: UILabel! {
+        didSet{
+            updateTouches()
+        }
+    }
     
     
     @IBAction private func buttonAction(_ sender: UIButton) {
